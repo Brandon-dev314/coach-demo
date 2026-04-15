@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
+import AuthCallback from './pages/AuthCallback';
 import ClientDetail from './pages/ClientDetail';
 import Calendar from './pages/Calendar';
 import Layout from './components/Layout';
@@ -33,6 +34,7 @@ const AppRoutes = () => {
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/clients" element={<Clients />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/clients/:id" element={<ClientDetail />} />
         <Route path="/calendar" element={<Calendar />} />
       </Route>
