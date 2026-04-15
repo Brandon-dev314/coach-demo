@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const passport = require('../config/passport');
-//ruta para iniciar el proceso de autenticacion con google
+const jwt = require('jsonwebtoken');
+
 router.get(
   '/google',
   passport.authenticate('google', {
@@ -14,27 +15,39 @@ router.get(
   })
 );
 
-//ruta de callback que google redirige despues de la autenticacion
 router.get(
   '/google/callback',
   passport.authenticate('google', {
     failureRedirect: `${process.env.CLIENT_URL}/login?error=auth_failed`,
   }),
   (req, res) => {
-    res.redirect(`${process.env.CLIENT_URL}/dashboard`);
+    // Crear token con datos del usuario
+    const token = jwt.sign(
+      { id: req.user.id, name: req.user.name, email: req.user.email, avatar: req.user.avatar },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    // Redirigir con token en URL
+    res.redirect(`${process.env.CLIENT_URL}/auth/callback?token=${token}`);
   }
 );
 
 router.get('/me', (req, res) => {
-  if (!req.user) return res.status(401).json({ user: null });
-  const { id, name, email, avatar } = req.user;
-  res.json({ user: { id, name, email, avatar } });
+  // Verificar token del header
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ user: null });
+  
+  const token = authHeader.split(' ')[1];
+  try {
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ user });
+  } catch {
+    res.status(401).json({ user: null });
+  }
 });
 
 router.post('/logout', (req, res) => {
-  req.logout(() => {
-    res.json({ success: true });
-  });
+  res.json({ success: true });
 });
 
 module.exports = router;
