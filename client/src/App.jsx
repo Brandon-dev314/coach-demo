@@ -30,11 +30,11 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/" element={<Navigate to="/dashboard" />} />
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/clients" element={<Clients />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/clients/:id" element={<ClientDetail />} />
         <Route path="/calendar" element={<Calendar />} />
       </Route>
